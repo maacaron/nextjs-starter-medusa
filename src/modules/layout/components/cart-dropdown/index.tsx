@@ -1,21 +1,17 @@
 "use client"
 
-import {
-  Popover,
-  PopoverButton,
-  PopoverPanel,
-  Transition,
-} from "@headlessui/react"
+import { Popover, Transition } from "@headlessui/react"
+import { Button } from "@medusajs/ui"
+import { usePathname } from "next/navigation"
+import { Fragment, useEffect, useRef, useState } from "react"
+
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { usePathname } from "next/navigation"
-import { Fragment, useEffect, useRef, useState } from "react"
 
 const CartDropdown = ({
   cart: cartState,
@@ -80,13 +76,13 @@ const CartDropdown = ({
       onMouseLeave={close}
     >
       <Popover className="relative h-full">
-        <PopoverButton className="h-full">
+        <Popover.Button className="h-full">
           <LocalizedClientLink
             className="hover:text-ui-fg-base"
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
-        </PopoverButton>
+        </Popover.Button>
         <Transition
           show={cartDropdownOpen}
           as={Fragment}
@@ -97,9 +93,9 @@ const CartDropdown = ({
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 translate-y-1"
         >
-          <PopoverPanel
+          <Popover.Panel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-white border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
+            className="hidden small:block absolute top-[calc(100%+1px)] right-0 border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
             data-testid="nav-cart-dropdown"
           >
             <div className="p-4 flex items-center justify-center">
@@ -121,11 +117,11 @@ const CartDropdown = ({
                         data-testid="cart-item"
                       >
                         <LocalizedClientLink
-                          href={`/products/${item.product_handle}`}
+                          href={`/products/${item.variant?.product?.handle}`}
                           className="w-24"
                         >
                           <Thumbnail
-                            thumbnail={item.thumbnail}
+                            thumbnail={item.variant?.product?.thumbnail}
                             images={item.variant?.product?.images}
                             size="square"
                           />
@@ -136,7 +132,7 @@ const CartDropdown = ({
                               <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
                                 <h3 className="text-base-regular overflow-hidden text-ellipsis">
                                   <LocalizedClientLink
-                                    href={`/products/${item.product_handle}`}
+                                    href={`/products/${item.variant?.product?.handle}`}
                                     data-testid="product-link"
                                   >
                                     {item.title}
@@ -155,11 +151,7 @@ const CartDropdown = ({
                                 </span>
                               </div>
                               <div className="flex justify-end">
-                                <LineItemPrice
-                                  item={item}
-                                  style="tight"
-                                  currencyCode={cartState.currency_code}
-                                />
+                                <LineItemPrice item={item} style="tight" />
                               </div>
                             </div>
                           </div>
@@ -220,7 +212,7 @@ const CartDropdown = ({
                 </div>
               </div>
             )}
-          </PopoverPanel>
+          </Popover.Panel>
         </Transition>
       </Popover>
     </div>
