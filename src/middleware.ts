@@ -1,9 +1,9 @@
-import { HttpTypes } from "@medusajs/types"
-import { NextRequest, NextResponse } from "next/server"
+import { HttpTypes } from '@medusajs/types'
+import { NextRequest, NextResponse } from 'next/server'
 
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
-const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
+const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || 'us'
 
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
@@ -15,24 +15,21 @@ async function getRegionMap(cacheId: string) {
 
   if (!BACKEND_URL) {
     throw new Error(
-      "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL."
+      'Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL.'
     )
   }
 
-  if (
-    !regionMap.keys().next().value ||
-    regionMapUpdated < Date.now() - 3600 * 1000
-  ) {
+  if (!regionMap.keys().next().value || regionMapUpdated < Date.now() - 3600 * 1000) {
     // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
     const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
       headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+        'x-publishable-api-key': PUBLISHABLE_API_KEY!,
       },
       next: {
         revalidate: 3600,
         tags: [`regions-${cacheId}`],
       },
-      cache: "force-cache",
+      cache: 'force-cache',
     }).then(async (response) => {
       const json = await response.json()
 
@@ -44,15 +41,13 @@ async function getRegionMap(cacheId: string) {
     })
 
     if (!regions?.length) {
-      throw new Error(
-        "No regions found. Please set up regions in your Medusa Admin."
-      )
+      throw new Error('No regions found. Please set up regions in your Medusa Admin.')
     }
 
     // Create a map of country codes to regions.
     regions.forEach((region: HttpTypes.StoreRegion) => {
       region.countries?.forEach((c) => {
-        regionMapCache.regionMap.set(c.iso_2 ?? "", region)
+        regionMapCache.regionMap.set(c.iso_2 ?? '', region)
       })
     })
 
@@ -74,11 +69,9 @@ async function getCountryCode(
   try {
     let countryCode
 
-    const vercelCountryCode = request.headers
-      .get("x-vercel-ip-country")
-      ?.toLowerCase()
+    const vercelCountryCode = request.headers.get('x-vercel-ip-country')?.toLowerCase()
 
-    const urlCountryCode = request.nextUrl.pathname.split("/")[1]?.toLowerCase()
+    const urlCountryCode = request.nextUrl.pathname.split('/')[1]?.toLowerCase()
 
     if (urlCountryCode && regionMap.has(urlCountryCode)) {
       countryCode = urlCountryCode
@@ -92,9 +85,9 @@ async function getCountryCode(
 
     return countryCode
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       console.error(
-        "Middleware.ts: Error getting the country code. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL."
+        'Middleware.ts: Error getting the country code. Did you set up regions in your Medusa Admin and define a MEDUSA_BACKEND_URL environment variable? Note that the variable is no longer named NEXT_PUBLIC_MEDUSA_BACKEND_URL.'
       )
     }
   }
@@ -108,7 +101,7 @@ export async function middleware(request: NextRequest) {
 
   let response = NextResponse.redirect(redirectUrl, 307)
 
-  let cacheIdCookie = request.cookies.get("_medusa_cache_id")
+  let cacheIdCookie = request.cookies.get('_medusa_cache_id')
 
   let cacheId = cacheIdCookie?.value || crypto.randomUUID()
 
@@ -117,7 +110,7 @@ export async function middleware(request: NextRequest) {
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
   const urlHasCountryCode =
-    countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
+    countryCode && request.nextUrl.pathname.split('/')[1].includes(countryCode)
 
   // if one of the country codes is in the url and the cache id is set, return next
   if (urlHasCountryCode && cacheIdCookie) {
@@ -126,7 +119,7 @@ export async function middleware(request: NextRequest) {
 
   // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
   if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
+    response.cookies.set('_medusa_cache_id', cacheId, {
       maxAge: 60 * 60 * 24,
     })
 
@@ -134,14 +127,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // check if the url is a static asset
-  if (request.nextUrl.pathname.includes(".")) {
+  if (request.nextUrl.pathname.includes('.')) {
     return NextResponse.next()
   }
 
-  const redirectPath =
-    request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
+  const redirectPath = request.nextUrl.pathname === '/' ? '' : request.nextUrl.pathname
 
-  const queryString = request.nextUrl.search ? request.nextUrl.search : ""
+  const queryString = request.nextUrl.search ? request.nextUrl.search : ''
 
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
@@ -154,6 +146,14 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    '/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)',
   ],
 }
+
+export const getPriceHistory = async (productId: string, regionId: string) =>
+  await fetch(`http://localhost:9000/store/products/${productId}/${regionId}/price-history`, {
+    credentials: 'include',
+    headers: {
+      'x-publishable-api-key': PUBLISHABLE_API_KEY!,
+    },
+  })
