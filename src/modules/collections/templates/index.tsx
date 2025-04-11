@@ -27,13 +27,7 @@ export default function CollectionTemplate({
         <div className="mb-8 text-2xl-semi">
           <h1>{collection.title}</h1>
         </div>
-        <Suspense
-          fallback={
-            <SkeletonProductGrid
-              numberOfProducts={collection.products?.length}
-            />
-          }
-        >
+        <Suspense fallback={<SkeletonProductGrid />}>
           <PaginatedProducts
             sortBy={sort}
             page={pageNumber}
