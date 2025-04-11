@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { Button, Heading } from "@medusajs/ui"
+import { HttpTypes } from '@medusajs/types'
+import { Button, Heading } from '@medusajs/ui'
 
-import CartTotals from "@modules/common/components/cart-totals"
-import Divider from "@modules/common/components/divider"
-import DiscountCode from "@modules/checkout/components/discount-code"
-import LocalizedClientLink from "@modules/common/components/localized-client-link"
-import { HttpTypes } from "@medusajs/types"
+import DiscountCode from '@modules/checkout/components/discount-code'
+import CartTotals from '@modules/common/components/cart-totals'
+import Divider from '@modules/common/components/divider'
+import LocalizedClientLink from '@modules/common/components/localized-client-link'
 
 type SummaryProps = {
   cart: HttpTypes.StoreCart & {
@@ -16,11 +16,11 @@ type SummaryProps = {
 
 function getCheckoutStep(cart: HttpTypes.StoreCart) {
   if (!cart?.shipping_address?.address_1 || !cart.email) {
-    return "address"
+    return 'address'
   } else if (cart?.shipping_methods?.length === 0) {
-    return "delivery"
+    return 'delivery'
   } else {
-    return "payment"
+    return 'payment'
   }
 }
 
@@ -28,18 +28,15 @@ const Summary = ({ cart }: SummaryProps) => {
   const step = getCheckoutStep(cart)
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <Heading level="h2" className="text-[2rem] leading-[2.75rem]">
-        Summary
+    <div className='flex flex-col gap-y-4'>
+      <Heading level='h2' className='text-[2rem] leading-[2.75rem]'>
+        Podsumowanie
       </Heading>
       <DiscountCode cart={cart} />
       <Divider />
       <CartTotals totals={cart} />
-      <LocalizedClientLink
-        href={"/checkout?step=" + step}
-        data-testid="checkout-button"
-      >
-        <Button className="w-full h-10">Go to checkout</Button>
+      <LocalizedClientLink href={'/checkout?step=' + step} data-testid='checkout-button'>
+        <Button className='w-full h-10 bg-blue-600 text-white'>Wybierz dostawę i płatność</Button>
       </LocalizedClientLink>
     </div>
   )

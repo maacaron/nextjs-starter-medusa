@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 
 import { getCategoryByHandle, listCategories } from "@lib/data/categories"
 import { listRegions } from "@lib/data/regions"
-import { StoreRegion } from "@medusajs/types"
+import { StoreProductCategory, StoreRegion } from "@medusajs/types"
 import CategoryTemplate from "@modules/categories/templates"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 
@@ -43,13 +43,19 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
+  const params = await props.params;
   try {
-    const productCategory = await getCategoryByHandle(params.category)
+    const { product_categories } = await getCategoryByHandle(
+      params.category
+    )
 
-    const title = productCategory.name + " | Medusa Store"
+    const title = product_categories
+      .map((category: StoreProductCategory) => category.name)
+      .join(" | ")
 
-    const description = productCategory.description ?? `${title} category.`
+    const description =
+      product_categories[product_categories.length - 1].description ??
+      `${title} category.`
 
     return {
       title: `${title} | Medusa Store`,
@@ -64,19 +70,21 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 }
 
 export default async function CategoryPage(props: Props) {
-  const searchParams = await props.searchParams
-  const params = await props.params
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { sortBy, page } = searchParams
 
-  const productCategory = await getCategoryByHandle(params.category)
+  const { product_categories } = await getCategoryByHandle(
+    params.category
+  )
 
-  if (!productCategory) {
+  if (!product_categories) {
     notFound()
   }
 
   return (
     <CategoryTemplate
-      category={productCategory}
+      categories={product_categories}
       sortBy={sortBy}
       page={page}
       countryCode={params.countryCode}
