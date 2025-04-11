@@ -1,6 +1,7 @@
-import { HttpTypes } from "@medusajs/types"
-import { getPercentageDiff } from "./get-precentage-diff"
-import { convertToLocale } from "./money"
+import { HttpTypes } from '@medusajs/types'
+
+import { getPercentageDiff } from './get-precentage-diff'
+import { convertToLocale } from './money'
 
 export const getPricesForVariant = (variant: any) => {
   if (!variant?.calculated_price?.calculated_amount) {
@@ -35,7 +36,7 @@ export function getProductPrice({
   variantId?: string
 }) {
   if (!product || !product.id) {
-    throw new Error("No product provided")
+    throw new Error('No product provided')
   }
 
   const cheapestPrice = () => {
@@ -46,10 +47,7 @@ export function getProductPrice({
     const cheapestVariant: any = product.variants
       .filter((v: any) => !!v.calculated_price)
       .sort((a: any, b: any) => {
-        return (
-          a.calculated_price.calculated_amount -
-          b.calculated_price.calculated_amount
-        )
+        return a.calculated_price.calculated_amount - b.calculated_price.calculated_amount
       })[0]
 
     return getPricesForVariant(cheapestVariant)
@@ -60,9 +58,7 @@ export function getProductPrice({
       return null
     }
 
-    const variant: any = product.variants?.find(
-      (v) => v.id === variantId || v.sku === variantId
-    )
+    const variant: any = product.variants?.find((v) => v.id === variantId || v.sku === variantId)
 
     if (!variant) {
       return null

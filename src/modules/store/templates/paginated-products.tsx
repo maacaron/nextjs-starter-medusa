@@ -1,12 +1,13 @@
-import { listProductsWithSort } from "@lib/data/products"
-import { getRegion } from "@lib/data/regions"
-import ProductPreview from "@modules/products/components/product-preview"
-import { Pagination } from "@modules/store/components/pagination"
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
+import { getProductsListWithSort } from '@lib/data/products'
+import { getRegion } from '@lib/data/regions'
+
+import ProductPreview from '@modules/products/components/product-preview'
+import { Pagination } from '@modules/store/components/pagination'
+import { SortOptions } from '@modules/store/components/refinement-list/sort-products'
 
 const PRODUCT_LIMIT = 12
 
-type PaginatedProductsParams = {
+export type PaginatedProductsParams = {
   limit: number
   collection_id?: string[]
   category_id?: string[]
@@ -34,19 +35,19 @@ export default async function PaginatedProducts({
   }
 
   if (collectionId) {
-    queryParams["collection_id"] = [collectionId]
+    queryParams['collection_id'] = [collectionId]
   }
 
   if (categoryId) {
-    queryParams["category_id"] = [categoryId]
+    queryParams['category_id'] = [categoryId]
   }
 
   if (productsIds) {
-    queryParams["id"] = productsIds
+    queryParams['id'] = productsIds
   }
 
-  if (sortBy === "created_at") {
-    queryParams["order"] = "created_at"
+  if (sortBy === 'created_at') {
+    queryParams['order'] = 'created_at'
   }
 
   const region = await getRegion(countryCode)
@@ -57,7 +58,7 @@ export default async function PaginatedProducts({
 
   let {
     response: { products, count },
-  } = await listProductsWithSort({
+  } = await getProductsListWithSort({
     page,
     queryParams,
     sortBy,
@@ -69,8 +70,8 @@ export default async function PaginatedProducts({
   return (
     <>
       <ul
-        className="grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8"
-        data-testid="products-list"
+        className='grid grid-cols-2 w-full small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8'
+        data-testid='products-list'
       >
         {products.map((p) => {
           return (
@@ -81,11 +82,7 @@ export default async function PaginatedProducts({
         })}
       </ul>
       {totalPages > 1 && (
-        <Pagination
-          data-testid="product-pagination"
-          page={page}
-          totalPages={totalPages}
-        />
+        <Pagination data-testid='product-pagination' page={page} totalPages={totalPages} />
       )}
     </>
   )
