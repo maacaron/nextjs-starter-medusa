@@ -6,7 +6,7 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 
 const PRODUCT_LIMIT = 12
 
-type PaginatedProductsParams = {
+export type PaginatedProductsParams = {
   limit: number
   collection_id?: string[]
   category_id?: string[]

@@ -11,6 +11,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { useCart } from "@modules/cart/cart-context/cart-context"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -34,6 +35,7 @@ export default function ProductActions({
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
   const countryCode = useParams().countryCode as string
+  const { addCartItem } = useCart()
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -104,6 +106,7 @@ export default function ProductActions({
 
     setIsAdding(true)
 
+    addCartItem(selectedVariant, product)
     await addToCart({
       variantId: selectedVariant.id,
       quantity: 1,
@@ -133,12 +136,9 @@ export default function ProductActions({
                   </div>
                 )
               })}
-              <Divider />
             </div>
           )}
         </div>
-
-        <ProductPrice product={product} variant={selectedVariant} />
 
         <Button
           onClick={handleAddToCart}
@@ -150,15 +150,15 @@ export default function ProductActions({
             !isValidVariant
           }
           variant="primary"
-          className="w-full h-10"
+          className="relative mt-4 flex w-full items-center justify-center rounded-full bg-pika-100 p-4 tracking-wide text-black hover:bg-pika-30"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
           {!selectedVariant && !options
-            ? "Select variant"
+            ? "Wybierz wariant"
             : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+            ? "Niedostępny"
+            : "Dodaj do koszyka"}
         </Button>
         <MobileActions
           product={product}

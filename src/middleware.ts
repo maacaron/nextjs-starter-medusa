@@ -157,3 +157,11 @@ export const config = {
     "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
+
+export const getPriceHistory = async (productId: string, regionId: string) =>
+  await fetch(`${BACKEND_URL}/store/products/${productId}/${regionId}/price-history`, {
+    credentials: 'include',
+    headers: {
+      'x-publishable-api-key': PUBLISHABLE_API_KEY!,
+    },
+  })

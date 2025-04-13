@@ -1,9 +1,13 @@
 import { Metadata } from "next"
 
+// import FeaturedProducts from "@modules/home/components/featured-products"
+// import Hero from "@modules/home/components/hero"
+import { getCollectionByHandle, listCollections } from "@lib/data/collections"
+import { getRegion } from "@lib/data/regions"
+import { ThreeItemGrid } from "@modules/grid/three-items"
 import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
-import { listCollections } from "@lib/data/collections"
-import { getRegion } from "@lib/data/regions"
+import { StoreCollection } from "@medusajs/types"
 
 export const metadata: Metadata = {
   title: "Medusa Next.js Starter Template",
@@ -24,18 +28,21 @@ export default async function Home(props: {
     fields: "id, handle, title",
   })
 
+  const handle = 'homepage-featured-items'
+
+  const homePageCollection = await getCollectionByHandle(handle).then(
+    (collection: StoreCollection) => collection
+  )
+  
+  if (!homePageCollection) {
+    return null;
+  }
+
   if (!collections || !region) {
     return null
   }
 
   return (
-    <>
-      <Hero />
-      <div className="py-12">
-        <ul className="flex flex-col gap-x-6">
-          <FeaturedProducts collections={collections} region={region} />
-        </ul>
-      </div>
-    </>
+    <ThreeItemGrid homePageCollection={homePageCollection} region={region} />
   )
 }

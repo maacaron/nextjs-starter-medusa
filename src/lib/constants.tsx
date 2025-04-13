@@ -66,3 +66,9 @@ export const noDivisionCurrencies = [
   "xdr",
   "xau",
 ]
+
+export const TAGS = {
+  collections: 'collections',
+  products: 'products',
+  cart: 'cart',
+}
