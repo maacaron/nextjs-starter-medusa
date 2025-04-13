@@ -26,19 +26,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "medusa-server-testing.s3.us-east-1.amazonaws.com",
-      },
-      {
-        protocol: 'https',
-        hostname: 'https://bucket-production-9322.up.railway.app/',
+        hostname: "bucket-production-9322.up.railway.app",
       },
     ],
   },
