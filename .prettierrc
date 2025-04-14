@@ -2,7 +2,22 @@
   "arrowParens": "always",
   "semi": false,
   "endOfLine": "auto",
-  "singleQuote": false,
+  "singleQuote": true,
   "tabWidth": 2,
-  "trailingComma": "es5"
+  "trailingComma": "es5",
+  "jsxSingleQuote": true,
+  "printWidth": 100,
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "importOrder": [
+    "^@lib/(.*)$",
+    "^@modules/(.*)$",
+    "^@pages/(.*)$",
+    "^[./]"
+  ],
+  "plugins": [
+    "@trivago/prettier-plugin-sort-imports"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

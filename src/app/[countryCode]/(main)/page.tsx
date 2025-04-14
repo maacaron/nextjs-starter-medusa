@@ -1,23 +1,17 @@
-import { Metadata } from "next"
+import { StoreCollection } from '@medusajs/types'
+import { Metadata } from 'next'
 
-// import FeaturedProducts from "@modules/home/components/featured-products"
-// import Hero from "@modules/home/components/hero"
-import { getCollectionByHandle, listCollections } from "@lib/data/collections"
-import { getRegion } from "@lib/data/regions"
-import { ThreeItemGrid } from "@modules/grid/three-items"
-import FeaturedProducts from "@modules/home/components/featured-products"
-import Hero from "@modules/home/components/hero"
-import { StoreCollection } from "@medusajs/types"
+import { getCollectionByHandle, listCollections } from '@lib/data/collections'
+import { getRegion } from '@lib/data/regions'
+
+import { MainProducts } from '@modules/home/components/main-products'
 
 export const metadata: Metadata = {
-  title: "Medusa Next.js Starter Template",
-  description:
-    "A performant frontend ecommerce starter template with Next.js 15 and Medusa.",
+  title: 'pika space',
+  description: 'Twoja przestrzeń z produktami Pokémon',
 }
 
-export default async function Home(props: {
-  params: Promise<{ countryCode: string }>
-}) {
+export default async function Home(props: { params: Promise }) {
   const params = await props.params
 
   const { countryCode } = params
@@ -25,7 +19,7 @@ export default async function Home(props: {
   const region = await getRegion(countryCode)
 
   const { collections } = await listCollections({
-    fields: "id, handle, title",
+    fields: 'id, handle, title',
   })
 
   const handle = 'homepage-featured-items'
@@ -33,16 +27,14 @@ export default async function Home(props: {
   const homePageCollection = await getCollectionByHandle(handle).then(
     (collection: StoreCollection) => collection
   )
-  
+
   if (!homePageCollection) {
-    return null;
+    return null
   }
 
   if (!collections || !region) {
     return null
   }
 
-  return (
-    <ThreeItemGrid homePageCollection={homePageCollection} region={region} />
-  )
+  return <MainProducts collection={homePageCollection} region={region} />
 }
