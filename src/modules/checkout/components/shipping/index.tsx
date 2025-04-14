@@ -12,6 +12,7 @@ import Divider from "@modules/common/components/divider"
 import MedusaRadio from "@modules/common/components/radio"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
+import { InPostPoint } from "./types"
 
 const PICKUP_OPTION_ON = "__PICKUP_ON"
 const PICKUP_OPTION_OFF = "__PICKUP_OFF"
@@ -53,6 +54,8 @@ const Shipping: React.FC<ShippingProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingPrices, setIsLoadingPrices] = useState(true)
+  const [selectedPackageMachine, setSelectedPackageMachine] = useState<InPostPoint>()
+  const [isPackageMachineModalOpen, setIsPackageMachineModalOpen] = useState(false)
 
   const [showPickupOptions, setShowPickupOptions] =
     useState<string>(PICKUP_OPTION_OFF)
@@ -111,7 +114,11 @@ const Shipping: React.FC<ShippingProps> = ({
   }
 
   const handleSubmit = () => {
-    router.push(pathname + "?step=payment", { scroll: false })
+    if (shippingMethodId?.includes('Paczkomat') && !!selectedPackageMachine) {
+      router.push(pathname + '?step=payment', { scroll: false })
+    } else {
+      setError('Proszę wybrać Paczkomat')
+    }
   }
 
   const handleSetShippingMethod = async (
@@ -147,6 +154,27 @@ const Shipping: React.FC<ShippingProps> = ({
   useEffect(() => {
     setError(null)
   }, [isOpen])
+
+  // const set = async (id: string) => {
+  //   setIsLoading(true)
+  //   await setShippingMethod({
+  //     cartId: cart.id,
+  //     shippingMethodId: id,
+  //     packageMachine: selectedPackageMachine?.name,
+  //   })
+  //     .catch((err) => {
+  //       setError(err.message)
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false)
+  //     })
+  // }
+
+  // useEffect(() => {
+  //   if (!!selectedPackageMachine) {
+  //     set(selectedShippingMethodId)
+  //   }
+  // }, [selectedPackageMachine])
 
   return (
     <div className="bg-white">
