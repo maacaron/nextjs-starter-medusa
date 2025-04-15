@@ -11,11 +11,11 @@ type UpdateType = 'plus' | 'minus' | 'delete'
 
 type CartItem = {
   id: string
-  variant_id: string
-  product_id: string
-  product_type_id: string
-  product_title: string
-  product_handle: string
+  variant_id?: string
+  product_id?: string
+  product_type_id?: string
+  product_title?: string
+  product_handle?: string
   quantity: number
 }
 
@@ -25,7 +25,7 @@ type Cart = {
   item_total: number
   item_subtotal: number
   shipping_total: number
-  items: GenericItem[]
+  items?: GenericItem[]
 }
 
 export type GenericCart<T = any> = {
@@ -69,7 +69,7 @@ const createEmptyCart = <T extends GenericCart>(): T =>
         quantity: 0,
       },
     ],
-  } as T)
+  }) as T
 
 const calculateItemCost = (quantity: number, price: number): number => {
   return price * quantity
@@ -121,9 +121,11 @@ const cartReducer = (state: GenericCart | null, action: CartAction): GenericCart
   switch (action.type) {
     case 'UPDATE_ITEM': {
       const { variantId, updateType } = action.payload
-      const updatedItems = currentCart.items
-        .map((item) => (item.variant_id === variantId ? updateCartItem(item, updateType) : item))
-        .filter(Boolean) as GenericItem[]
+      const updatedItems = (currentCart.items ?? [])
+        .map((item: GenericItem) =>
+          item.variant_id === variantId ? updateCartItem(item, updateType) : item
+        )
+        .filter(Boolean) as CartItem[]
 
       if (updatedItems.length === 0) {
         return {
@@ -135,7 +137,7 @@ const cartReducer = (state: GenericCart | null, action: CartAction): GenericCart
       return {
         ...currentCart,
         items: updatedItems,
-      } as GenericCart
+      }
     }
     case 'ADD_ITEM': {
       const { variant, product } = action.payload
@@ -145,9 +147,9 @@ const cartReducer = (state: GenericCart | null, action: CartAction): GenericCart
       const updatedItem = createOrUpdateCartItem(existingItem, variant, product)
       const updatedItems = existingItem
         ? currentCart?.items?.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-        : [...currentCart.items, updatedItem]
+        : [...(currentCart.items || []), updatedItem]
 
-      const filteredItems = updatedItems.filter((item) => {
+      const filteredItems = updatedItems?.filter((item) => {
         return !!item.product_id && !!item.variant_id
       })
 
@@ -171,7 +173,7 @@ export const useCart = () => {
     throw new Error('useCart must be used within a CartProvider')
   }
 
-  const initialCart = use(context.cart) as GenericCart | null
+  const initialCart = use(context.cart)
   const [optimisticCart, updateOptimisticCart] = useOptimistic(initialCart, cartReducer)
 
   const updateCartItem = (variantId: string, updateType: UpdateType) => {

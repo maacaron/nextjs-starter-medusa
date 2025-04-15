@@ -6,12 +6,21 @@ import { getRegion } from '@lib/data/regions'
 
 import { MainProducts } from '@modules/home/components/main-products'
 
+interface CountryCodeParams {
+  countryCode: string
+}
+
+interface HomePageParamsProps {
+  // prettier-ignore
+  params: Promise<CountryCodeParams>
+}
+
 export const metadata: Metadata = {
   title: 'pika space',
   description: 'Twoja przestrzeń z produktami Pokémon',
 }
 
-export default async function Home(props: { params: Promise }) {
+export default async function Home(props: HomePageParamsProps) {
   const params = await props.params
 
   const { countryCode } = params

@@ -91,7 +91,7 @@ export default function CartModal() {
                 </button>
               </div>
 
-              {!cart || cart.items.length === 0 ? (
+              {!cart || cart?.items?.length === 0 ? (
                 <div className='mt-20 flex w-full flex-col items-center justify-center overflow-hidden'>
                   <ShoppingCartIcon className='h-16' />
                   <p className='mt-6 text-center text-2xl font-bold'>Twój koszyk jest pusty.</p>
@@ -99,7 +99,7 @@ export default function CartModal() {
               ) : (
                 <div className='flex h-full flex-col justify-between overflow-hidden p-1'>
                   <ul className='grow overflow-auto py-4'>
-                    {cart.items.map((item, i) => {
+                    {cart?.items?.map((item, i) => {
                       const productUrl = `/products/${item.product_handle}`
 
                       return (
@@ -118,7 +118,7 @@ export default function CartModal() {
                                     className='h-full w-full object-cover'
                                     width={64}
                                     height={64}
-                                    alt={item.product_title}
+                                    alt={item.product_title || ''}
                                     src={item.thumbnail}
                                   />
                                 </Link>
